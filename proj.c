@@ -3,154 +3,44 @@
 #include <stdlib.h>
 #include <string.h>
 
+//
 
-/*LIST addLast(int n, LIST l) {
-    LIST l2 = l;
-    if(l == NULL)return NULL;
-    while((l->next) != NULL)l = l->next;
-    l->next = newlist(n, NULL);
-    return l2;
-}
 
-LIST newlist(int n, LIST l) {
-    LIST new = malloc(sizeof(struct list));
-    new->elem = n;
-    new->next = l;
-    return new;
-}*/
+
+
 //Program reader
-PROGLIST mkProgList(char *s, PROGLIST tail) {
+PROGLIST mkProgList(Instr givenInstr) {
     PROGLIST p;
     p = (PROGLIST)malloc(sizeof(struct proglist));
-    p->name = strdup(s);
-    p->next = tail;
+    p->instruction = givenInstr;
+    p->next = NULL;
     return p;
 }
 PROGLIST addProgLast(char *s, PROGLIST l) {
     PROGLIST p = l;
     if(l == NULL)return NULL;
     while((l->next) != NULL)l = l->next;
-    l->next = mkProgList(s, NULL);
+    l->next = mkProgList(instrType(s));
     return p;
 }
-void printProgList(PROGLIST l) {
-    while((l->next) != NULL) {
-        printf("%s\n", l->name);
-        l = l->next;
-    }
-    return;
-}
-//program compiler;
-void createCompiled(PROGLIST l) {
-    if(l->next == NULL)return;
-    char *name = l->name;
+Instr instrType(char *name) {
     char functionName[255];
-    int i = 0, equalFlag = 0;
-    while(name[i] != '\0') {
-        if(name[i] == '=') {
-            equalFlag = 1;
-            break;
-        }
-        i++;
-    }
-    i = 0;
+    char varName[255], varName2[255];
+    int j = 0, i = 0;
+    Elem first = empty(), second = empty(), third = empty();
+    OpKind op;
     while(name[i] != '(' && name[i] != '\0' && name[i] != ' ' && name[i] != '=') {
         functionName[i] = name[i];
         i++;
     }
     functionName[i] = '\0';
-    //printf("%s\n", name);
-    int varPosition = 0, j = 0;
-    char varName[255], varName2[255];
-    if(name[i] == '(')varPosition = i + 1;
-    //Ler Variveis
-    if(strcmp(functionName, "ler") == 0) {
-        while(name[varPosition] != ')' && name[varPosition] != '\0') {
-            varName[j] = name[varPosition];
-            varPosition++;
-            j++;
-        }
-        varName[j] = '\0';
-        //printf("Valor: %s - %d\n",varName,hashChar(varName));
-        printf("Valor de %s: \n-> ", varName);
-        float varVal;
-        scanf("%f", &varVal);
-        insertHash(varName, mkFloat(varVal));
-        //escrever variaveis
-    } else if(strcmp(functionName, "escrever") == 0) {
-        while(name[varPosition] != ')' && name[varPosition] != '\0') {
-            varName[j] = name[varPosition];
-            varPosition++;
-            j++;
-        }
-        varName[j] = '\0';
-        //printf("Valor: %s - %d\n", varName, hashChar(varName));
-        MAP p = lookupHash(varName);
-        if(lookupHash(varName) == NULL) {
-            printf("Variavel %s não declarada\n", varName);
-            return;
-        } else {
-            Elem temp = p->value;
-            printf("Valor da Variável %s: ", varName);
-            printVar(temp);
-        }
-    } else if(strcmp(functionName, "goto") == 0) {
-        while(name[i] == ' ')i++;
-        while(name[i] != '\0' && name[i] != ' ' && name[i] != ';') {
-            varName[j] = name[i];
-            j++;
-            i++;
-        }
-        PROGLIST p = findGoto(varName);
-        if(p == NULL) {
-            printf("Label %s não existente\n", varName);
-            return;
-        }
-        //printf("goto\n");
-        createCompiled(p);
-        return;
-    } else if(strcmp(functionName, "if") == 0) {
-        while(name[i] == ' ')i++;
-        while(name[i] != '\0' && name[i] != ';' && name[i] != ' ') {
-            varName[j] = name[i];
-            j++;
-            i++;
-        }
-        varName[j]='\0';
-        if(name[i] == ';') {
-            printf("If Inválido\n");
-            return;
-        }
-
-        while(name[i] == ' ')i++;
-        j=0;
-        while(name[i] != '\0' && name[i] != ';') {
-            varName2[j] = name[i];
-            j++;
-            i++;
-        }
-        varName2[j]='\0';
-        //printf("Variavel do if :%s\n", varName);
-        MAP p = lookupHash(varName);
-        int x;
-        if(lookupHash(varName) == NULL) {
-            printf("Variavel %s não declarada\n", varName);
-            return;
-        } else {
-            Elem temp = p->value;
-            //printf("Valor da Variável %s: ", varName);
-            if(temp.contents.valS !=0) {
-                //printf("%d\n", (int)temp.contents.valS);
-                PROGLIST p = l;
-                p->name = varName2;
-                createCompiled(p);
-                return;
-            }
-        }
-
-    } else if(equalFlag == 1) {
-        while(name[i] == ' ' && name[i] != '=')i++;
-        if(name[i] == '=')i++;
+    first = mkVar(functionName);
+    while(name[i] == ' ' && name[i] != '=')i++;
+    //Se for uma atribuição
+    if(name[i] == '=') {
+        op = ATRIB;
+        first = mkVar(functionName);
+        i++;
         //Dividir os componentes
         while(name[i] == ' ')i++;
         while(name[i] != '\0' && name[i] != ';' && name[i] != ' ' && name[i] != '+' && name[i] != '-' && name[i] != '*' && name[i] != '/') {
@@ -161,7 +51,7 @@ void createCompiled(PROGLIST l) {
         varName[j] = '\0';
         while(name[i] == ' ')i++;
         //printf("lelel %s - %c\n",varName,name[i]);
-        if(name[i] == '\0' || name[i]==';') {
+        if(name[i] == '\0' || name[i] == ';') {
             int flag = 0;
             float varVal;
             j = 0;
@@ -172,21 +62,28 @@ void createCompiled(PROGLIST l) {
                 j++;
             }
             if(flag == 1) {
-                MAP p = lookupHash(varName);
-                if(lookupHash(varName) == NULL) {
-                    printf("Variavel %s não declarada\n", varName);
-                    return;
-                } else {
-                    Elem temp = p->value;
-                    varVal = temp.contents.valS;
-                }
-            } else varVal = atoi(varName);
-            //printf("varval %.2f\n",varVal);
-            insertHash(functionName, mkFloat(varVal));
+                second = mkVar(varName);
+            } else second = mkFloat((float)atoi(varName));
+            return mkInstr(op, first, second, empty());
         } else {
-            char op = name[i];
+            switch(name[i]) {
+            case '+':
+                op = ADD;
+                break;
+            case '-':
+                op = SUB;
+                break;
+            case '*':
+                op = MUL;
+                break;
+            case '/':
+                op = DIV;
+                break;
+            default:
+                printf("Operador %c inexistente\n", name[i]);
+                exit(0);
+            }
             i++;
-            //printf("op: %c %s %s\n", op, varName, varName2);
             j = 0;
             while(name[i] == ' ')i++;
             while(name[i] != '\0' && name[i] != ' ' && name[i] != ';') {
@@ -207,15 +104,8 @@ void createCompiled(PROGLIST l) {
                 j++;
             }
             if(flag == 1) {
-                MAP p = lookupHash(varName);
-                if(lookupHash(varName) == NULL) {
-                    printf("Variavel %s não declarada\n", varName);
-                    return;
-                } else {
-                    Elem temp = p->value;
-                    varVal = temp.contents.valS;
-                }
-            } else varVal = atoi(varName);
+                second = mkVar(varName);
+            } else second = mkFloat((float)atoi(varName));
 
             flag = 0;
             j = 0;
@@ -226,71 +116,251 @@ void createCompiled(PROGLIST l) {
                 j++;
             }
             if(flag == 1) {
-                MAP p2 = lookupHash(varName2);
-                if(lookupHash(varName2) == NULL) {
-                    printf("Variavel %s não declarada\n", varName2);
-                    return;
-                } else {
-                    Elem temp2 = p2->value;
-                    varVal2 = temp2.contents.valS;
-                }
-            } else varVal2 = atoi(varName2);
+                third = mkVar(varName2);
+            } else third = mkFloat((float)atoi(varName2));
             //printf("feito: %d\n",varVal2);
-
-            MAP p3 = lookupHash(functionName);
-            float total;
-            switch(op) {
-            case '+':
-                total = varVal + varVal2;
-                break;
-            case '-':
-                total = varVal - varVal2;
-                break;
-            case '*':
-                total = varVal * varVal2;
-                break;
-            case '/':
-                total = varVal / varVal2;
-                break;
-            default:
-                printf("Operador %c inexistente\n", op);
-                return;
-
-            }
-            insertHash(functionName, mkFloat(total));
+            return mkInstr(op, first, second, third);
         }
-    } else {
-        //printf("Linha inválida? %s\n", name);
-    }
-    //printf("\n%s - %s - %s\n", name, varName, functionName);
-    createCompiled(l->next);
-
-}
-void initLabelist(PROGLIST l) {
-    if(l->next == NULL)return;
-    char *name = l->name;
-    char functionName[255];
-    int i = 0, equalFlag = 0;
-    while(name[i] != '\0' && name[i] != ' ') {
-        functionName[i] = name[i];
+    } /*read*/ else if(strcmp(functionName, "ler") == 0) {
         i++;
-    }
-    functionName[i] = '\0';
-    //printf("%s\n", name);
-    int varPosition = 0, j = 0;
-    char varName[255], varName2[255];
-    if(strcmp(functionName, "label") == 0) {
+        op = READ;
+        while(name[i] != ')' && name[i] != '\0') {
+            varName[j] = name[i];
+            i++;
+            j++;
+        }
+        varName[j] = '\0';
+        j = 0;
+        int flag = 0;
+        while(varName[j] != '\0') {
+            if(!(varName[j] >= '0' && varName[j] <= '9')) {
+                flag = 1;
+            }
+            j++;
+        }
+        if(flag == 0) {
+            printf("Variável %s inválida\n", varName);
+            exit(0);
+        }
+        //printf("Valor: %s - %d\n",varName,hashChar(varName));
+        return mkInstr(op, mkVar(varName), empty(), empty());
+    } /*write*/else if(strcmp(functionName, "escrever") == 0) {
+        i++;
+        op = WRITE;
+        while(name[i] != ')' && name[i] != '\0') {
+            varName[j] = name[i];
+            i++;
+            j++;
+        }
+        varName[j] = '\0';
+        return mkInstr(op, mkVar(varName), empty(), empty());
+    } /*if*/   else if(strcmp(functionName, "if") == 0) {
+        op = IF_I;
+        while(name[i] != '\0' && name[i] != ';' && name[i] != ' ') {
+            varName[j] = name[i];
+            j++;
+            i++;
+        }
+        varName[j] = '\0';
+        if(name[i] == ';' || name[i] == '\0') {
+            printf("If Inválido\n");
+            exit(0);
+        }
         while(name[i] == ' ')i++;
+        j = 0;
+        while(name[i] != '\0' && name[i] != ';') {
+            varName2[j] = name[i];
+            j++;
+            i++;
+        }
+        varName2[j] = '\0';
+        return mkInstr(op, mkVar(varName), mkVar(varName2), empty());
+    } /*goto*/ else if(strcmp(functionName, "goto") == 0) {
+        op = GOTO_I;
+        j=0;
         while(name[i] != '\0' && name[i] != ' ' && name[i] != ';') {
             varName[j] = name[i];
             j++;
             i++;
         }
-        printf("Label: %s\n", varName);
-        insertLabel(varName, l->next);
+        varName[j] = '\0';
+        return mkInstr(op, mkVar(varName), empty(), empty());
+    } /*label*/else if(strcmp(functionName, "label") == 0) {
+        op = LABEL;
+        while(name[i] != '\0' && name[i] != ' ' && name[i] != ';') {
+            varName[j] = name[i];
+            j++;
+            i++;
+        }
+        varName[j] == '\0';
+        return mkInstr(op, mkVar(varName), empty(), empty());
+    } /*fim*/  else if(strcmp(functionName, "q") == 0 || strcmp(functionName, "\0") == 0) {
+        return mkInstr(EMP, empty(), empty(), empty());
+    } else {
+        printf("WARNING: Instrução inválida. linha ignorada %s - %s\n", name, functionName);
+        return mkInstr(EMP, empty(), empty(), empty());
     }
-    initLabelist(l->next);
 }
+void printProgList(PROGLIST l) {
+    while((l->next) != NULL) {
+        OpKind op = l->instruction.op;
+        Elem first = l->instruction.first;
+        Elem second = l->instruction.second;
+        Elem third = l->instruction.third;
+        switch(op) {
+        case ATRIB:
+            printf("Type: %u | %s=%.0f\n", op, first.contents.name, second.contents.val);
+            break;
+        case ADD:
+            if(second.kind == FLOAT_CONST && third.kind == FLOAT_CONST)printf("Type: %u | %s=%.0f+%0.f\n", op, first.contents.name, second.contents.val, third.contents.val);
+            else if(second.kind == STRING && third.kind == FLOAT_CONST)printf("Type: %u | %s=%s+%0.f\n", op, first.contents.name, second.contents.name, third.contents.val);
+            else if(third.kind == STRING && second.kind == FLOAT_CONST)printf("Type: %u | %s=%.0f+%s\n", op, first.contents.name, second.contents.val, third.contents.name);
+            else printf("Type: %u | %s=%s+%s\n", op, first.contents.name, second.contents.name, third.contents.name);
+            break;
+        case SUB:
+            if(second.kind == FLOAT_CONST && third.kind == FLOAT_CONST)printf("Type: %u | %s=%.0f-%0.f\n", op, first.contents.name, second.contents.val, third.contents.val);
+            else if(second.kind == STRING && third.kind == FLOAT_CONST)printf("Type: %u | %s=%s-%0.f\n", op, first.contents.name, second.contents.name, third.contents.val);
+            else if(third.kind == STRING && second.kind == FLOAT_CONST)printf("Type: %u | %s=%.0f-%s\n", op, first.contents.name, second.contents.val, third.contents.name);
+            else printf("Type: %u | %s=%s-%s\n", op, first.contents.name, second.contents.name, third.contents.name);
+            break;
+        case MUL:
+            if(second.kind == FLOAT_CONST && third.kind == FLOAT_CONST)printf("Type: %u | %s=%.0f*%0.f\n", op, first.contents.name, second.contents.val, third.contents.val);
+            else if(second.kind == STRING && third.kind == FLOAT_CONST)printf("Type: %u | %s=%s*%0.f\n", op, first.contents.name, second.contents.name, third.contents.val);
+            else if(third.kind == STRING && second.kind == FLOAT_CONST)printf("Type: %u | %s=%.0f*%s\n", op, first.contents.name, second.contents.val, third.contents.name);
+            else printf("Type: %u | %s=%s*%s\n", op, first.contents.name, second.contents.name, third.contents.name);
+            break;
+        case DIV:
+            if(second.kind == FLOAT_CONST && third.kind == FLOAT_CONST)printf("Type: %u | %s=%.0f/%0.f\n", op, first.contents.name, second.contents.val, third.contents.val);
+            else if(second.kind == STRING && third.kind == FLOAT_CONST)printf("Type: %u | %s=%s/%0.f\n", op, first.contents.name, second.contents.name, third.contents.val);
+            else if(third.kind == STRING && second.kind == FLOAT_CONST)printf("Type: %u | %s=%.0f/%s\n", op, first.contents.name, second.contents.val, third.contents.name);
+            else printf("Type: %u | %s=%s/%s\n", op, first.contents.name, second.contents.name, third.contents.name);
+            break;
+        case IF_I:
+            printf("Type: %u | if %s!=0 then %s\n", op, first.contents.name, second.contents.name);
+            break;
+        case WRITE:
+            printf("Type: %u | WRITE: %s\n", op, first.contents.name);
+            break;
+        case READ:
+            printf("Type: %u | READ: %s\n", op, first.contents.name);
+            break;
+        case GOTO_I:
+            printf("Type: %u | GOTO_I: %s\n", op, first.contents.name);
+            break;
+        case LABEL:
+            printf("Type: %u | LABEL: %s\n", op, first.contents.name);
+            break;
+        case EMP:
+            printf("Type: %u | EMPTY\n", op);
+            break;
+        default:
+            printf("%u Ainda nada\n", op);
+            return;
+        }
+        l = l->next;
+    }
+    return;
+}
+
+float calculatorAssistant(OpKind op,float val1,float val2){
+    switch(op){
+        case ADD:return val1+val2;
+        case SUB:return val1-val2;
+        case MUL:return val1*val2;
+        case DIV:return val1/val2;
+        default:return -1;
+    }
+}
+
+void compileList(PROGLIST l) {
+    if(l==NULL)return;
+    Instr localInstr=l->instruction;
+    Elem first= localInstr.first;
+    Elem second= localInstr.second;
+    Elem third=localInstr.third;
+    switch(l->instruction.op){
+            case ATRIB:
+                if(second.kind==FLOAT_CONST)insertHash(first.contents.name, second);
+                else{
+                    MAP p = lookupHash(second.contents.name);
+                    if(p == NULL) {
+                        printf("Variavel %s não declarada\n", second.contents.name);
+                        return;
+                    } else insertHash(first.contents.name, p->value);
+                }
+                break;
+            case ADD:case SUB:case MUL: case DIV:;
+                float val1,val2;
+                if(second.kind==STRING){
+                    MAP p = lookupHash(second.contents.name);
+                    if(p == NULL) {
+                        printf("Variavel %s não declarada\n", second.contents.name);
+                        return;
+                    } else val1=p->value.contents.val;
+                }else val1=second.contents.val;
+                if(third.kind==STRING){
+                    MAP p = lookupHash(third.contents.name);
+                    if(p == NULL) {
+                        printf("Variavel %s não declarada\n", third.contents.name);
+                        return;
+                    } else val2=p->value.contents.val;
+                }else val2=third.contents.val;
+                insertHash(first.contents.name, mkFloat(calculatorAssistant(l->instruction.op,val1,val2)));
+                
+                break;
+            case WRITE:;
+                MAP p = lookupHash(first.contents.name);
+                if(p == NULL) {
+                    printf("Variavel %s não declarada\n", first.contents.name);
+                    return;
+                } else printf("Variável %s: %.0f\n",first.contents.name,p->value.contents.val);
+                break;
+            case READ:;
+                Elem scan;
+                printf("Ler variável %s: ",first.contents.name);
+                scanf("%f",&scan.contents.val);
+                insertHash(first.contents.name, scan);
+                break;
+            case IF_I:;
+                MAP b = lookupHash(first.contents.name);
+                if(b == NULL) {
+                    printf("Variavel %s não declarada\n", first.contents.name);
+                    return;
+                } else if((int)b->value.contents.val!=0){
+                    PROGLIST n;
+                    n = (PROGLIST)malloc(sizeof(struct proglist));
+                    n->instruction=instrType(second.contents.name);
+                    n->next=l->next;
+                    compileList(n);
+                    return;
+                }
+                break;
+            case GOTO_I:;
+                PROGLIST lTemp=gotoLabel(first.contents.name);
+                if(lTemp==NULL){
+                    printf("Label Inexistente\n");
+                    return;
+                }
+                compileList(lTemp);
+                return;
+            case EMP:case LABEL:break;
+            default:printf("empty as my soul");break;
+                
+    }
+    compileList(l->next);
+}
+
+void initLabelist(PROGLIST l) {
+    while(l!=NULL){
+        if(l->instruction.op == LABEL) {
+            Elem x=l->instruction.first;
+            //printf("Label: %s\n", x.contents.name);
+            insertLabel(x.contents.name, l->next);
+        }
+        l=l->next;
+    }
+}
+
 void printLabelist() {
     //printf(" ");
     for(int i = 0; i < LABELMAX; i++) {
@@ -307,7 +377,7 @@ void insertLabel(char *s, PROGLIST l) {
     p->next = NULL;
     labels[index] = p;
 }
-PROGLIST findGoto(char *s) {
+PROGLIST gotoLabel(char *s) {
     int index;
     index = hashChar(s);
     if(labels[index] == NULL)return NULL;
@@ -320,27 +390,18 @@ void printVar(Elem x) {
     default:
         printf("Empty\n");
         break;
-    case INT_CONST:
-        printf("%d\n", x.contents.val);
-        break;
     case FLOAT_CONST:
-        printf("%.2f\n", x.contents.valS);
+        printf("%.2f\n", x.contents.val);
         break;
     case STRING:
         printf("%s\n", x.contents.name);
         break;
     }
 }
-Elem mkInt(int n) {
-    Elem e;
-    e.kind = INT_CONST;
-    e.contents.val = n;
-    return e;
-}
 Elem mkFloat(float n) {
     Elem e;
     e.kind = FLOAT_CONST;
-    e.contents.valS = n;
+    e.contents.val = n;
     return e;
 }
 Elem mkVar(char *s) {
@@ -392,19 +453,23 @@ int hashChar(char *s) {
     //total/=1000;
     return total;
 }
+Instr mkInstr(OpKind oper, Elem x, Elem y, Elem z) {
+    Instr t;
+    t.op = oper;
+    t.first = x;
+    t.second = y;
+    t.third = z;
+    return t;
+}
 /*
-getVal()
-Instr mkInstr(Opkind oper, Elem x, Elem y, Elem z);
-void printVar(Elem x);
 void readVar(Elem x);
-void gotoLabel(char *s);
 
-LABELIST initLabelList(int x, char *s, PROGLIST l);
+PROGLIST newlist(int x,char *s, PROGLIST l);
 int lenght (PROGLIST x);
 PROGLIST findLabel(char *s);
 PROGLIST addLast(int, PROGLIST);
-PROGLIST filter(int (*p)(int), PROGLIST);*/
-
+PROGLIST filter(int (*p)(int), PROGLIST);
+float getValue(Elem x);*/
 
 
 //

@@ -1,11 +1,12 @@
-typedef enum {ATRIB, ADD, SUB, MUL, DIV, IF_I, WRITE, READ, GOTO_I, LABEL,EMP} OpKind;
+typedef enum {ATRIB, ADD, SUB, MUL, DIV, IF_I, PRINT, READ, GOTO_I, LABEL} OpKind;
 
-typedef enum {EMPTY, FLOAT_CONST, STRING} ElemKind;
+typedef enum {EMPTY, INT_CONST, FLOAT_CONST, STRING} ElemKind;
 
 typedef struct elem{
     ElemKind kind;
     union {
-        float val;
+        int val;
+        float valS;
         char *name;
     } contents;
 } Elem;
@@ -15,24 +16,24 @@ typedef struct {
     Elem first, second, third;
 } Instr;
 
-typedef struct proglist {
-    Instr instruction;
-    struct proglist *next;
-} *PROGLIST;
-
-
 Elem mkVar(char *s);
+Elem mkInt(int n);
 Elem mkFloat(float n);
-Elem empty();
 Instr mkInstr(OpKind oper, Elem x, Elem y, Elem z);
-Instr instrType(char *name);
 void printVar(Elem x);
+void readVar(Elem x);
+void gotoLabel(char *s);
 
-/*typedef struct proglist {
+typedef struct compilelist {
+	Instr name;
+    struct compilelist *next;
+} *COMPILELIST;
+
+typedef struct proglist {
 	char *name;
     struct proglist *next;
 } *PROGLIST;
-*/
+
 typedef struct labelist {
 	char *name;
 	PROGLIST proglist;
@@ -43,14 +44,22 @@ typedef struct labelist {
 LABELIST labels[LABELMAX];
 void initLabelist(PROGLIST l);
 void insertLabel(char *s, PROGLIST l);
-PROGLIST gotoLabel(char *s);
+PROGLIST findGoto(char *s);
 void printLabelist();
 
 
-PROGLIST mkProgList(Instr givenInstr);
+PROGLIST mkProgList(char *s,PROGLIST tail);
 PROGLIST addProgLast(char *s,PROGLIST l);
-void printProgList(PROGLIST l);
-void compileList(PROGLIST l);
+void printProgList(PROGLIST);
+void createCompiled(PROGLIST);
+
+PROGLIST newlist(int x,char *s, PROGLIST l);
+int lenght (PROGLIST x);
+PROGLIST findLabel(char *s);
+PROGLIST addLast(int, PROGLIST);
+PROGLIST filter(int (*p)(int), PROGLIST);
+Elem empty();
+float getValue(Elem x);
 
 //HASH
 #define HASH_SIZE 100000

@@ -13,5 +13,25 @@ if p escrever(p);
 label L2;
 escrever(k);
 
-p=0;
+p=4;
+escrever(p);
+
+ler(A);
+B=5
+escrever(A);
+A =20/B;
+escrever(A);
+
+z=5
+label L2;
+escrever(z);
+z=z-1;
+if z goto L2;
+escrever(69);
+
+p=5;
+if p escrever(p);
+p=0
+if p escrever(p);
+p= 4;
 escrever(p);

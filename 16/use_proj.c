@@ -8,18 +8,17 @@ int  main(){
         labels[i]=NULL;
     }
 	char reader[255];
+	printf("-> ");
 	scanf("%[^\n]",reader);getchar();
-	PROGLIST l=mkProgList(instrType(reader));
-	while(strcmp(reader,"q")!=0){
-		reader[0]='\0';
-		//printf("-> ");
+	PROGLIST l=mkProgList(reader,NULL);
+	while(strcmp(reader,"quit;")!=0){
+		printf("-> ");
 		scanf("%[^\n]",reader);getchar();
 		l=addProgLast(reader,l);
-
 	}
 	initLabelist(l);
-	printf("\n###############\n\n");
+	printf("\n###############\n");
 	//printProgList(l);
 	//printLabelist();
-	compileList(l);
+	createCompiled(l);
 }

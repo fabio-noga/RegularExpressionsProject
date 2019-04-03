@@ -1,0 +1,19 @@
+ler(k);
+p = 6 + k;
+escrever(p);
+if p goto L1;
+p = p/2;
+escrever(p);
+goto L2;
+label L1;
+p = 2*p;
+escrever(p);
+p=1;
+if p escrever(p);
+label L2;
+escrever(k);
+escrever(42);
+quit;
+
+z=42;
+escrever(z);

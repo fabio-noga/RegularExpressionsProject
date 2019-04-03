@@ -4,7 +4,7 @@
 *by* @fabio-noga *and* @luistrinta
 
 ## Exemplos de utilização
-# ATRIBUIÇÃO, ADIÇÃO, SUBTRAÇÃO ,MULTIPLICAÇÃO E DIVIZÃO
+### ATRIBUIÇÃO, ADIÇÃO, SUBTRAÇÃO ,MULTIPLICAÇÃO E DIVIZÃO
 ```
 a=42  ;
 a = 8+a;
@@ -12,13 +12,13 @@ a=a-  10;
 a =a*a;
 a= a/ 100;
 ```
-# READ
+### READ
 ```
 ler(a);
 ```
 >Ler variável a: _
 
-# WRITE
+### WRITE
 ```
 a=16;
 escrever(a);
@@ -29,13 +29,13 @@ escrever(b);
 >Número: 42
 >Variavel b não declarada
 
-# LABEL
+### LABEL
 ```
 label z1
 ```
 neste caso a label z1 será adicionado à hashtable de labels.
 
-# GOTO
+### GOTO
 ```
 goto z1;
 goto z2;
@@ -44,7 +44,7 @@ z1 existindo, o programa continua onde esta label se encontra.
 z2 não existindo, o programa devolve
 >Label Inexistente
 
-# IF
+### IF
 ```
 a=42;
 if a escrever(a);
@@ -56,7 +56,7 @@ if a escrever(a);
 ***
 
 ## EXEMPLOS DE PROGRAMAS
-# FOR LOOP
+### FOR LOOP
 ```
 ler(z);
 label z1;
@@ -72,7 +72,7 @@ quit;
 >Variavel z: 1
 >Variavel z: 0
 
-## GERAL
+### GERAL
 ```
 ler(k);
 p = 6 + k;

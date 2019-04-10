@@ -1,4 +1,4 @@
-# NewLanguageProject
+# RegularExpressionsProject
 [LabProg Project 1](https://github.com/fabio-noga/NewLanguageProject)
 (available April 8)
 *by* Fábio Nogueira 201706376 e Luís Trinta 201707192.
@@ -12,7 +12,7 @@ para ler a partir do stin ou
 para ler a partir de um ficheiro 
 
 ## Exemplos de utilização
-### ATRIBUIÇÃO, ADIÇÃO, SUBTRAÇÃO ,MULTIPLICAÇÃO E DIVIZÃO
+### ATRIBUIÇÃO, ADIÇÃO, SUBTRAÇÃO ,MULTIPLICAÇÃO E DIVISÃO
 ##### Input
 ```
 a=42  ;
@@ -91,12 +91,32 @@ quit;
 ```
 ##### Output
 ```
-Ler variavel z: *5*
+Ler variavel z: 5
 Variavel z: 4
 Variavel z: 3
 Variavel z: 2
 Variavel z: 1
 Variavel z: 0
+```
+### FACTORIAL
+#### Input
+```
+
+ler(i)
+k = 1
+label l1
+k = k*i
+i=i-1
+if i goto l1
+escrever(k)
+quit;
+
+```
+#### Output
+```
+Ler variavel i: 6
+Variavel k: 720
+
 ```
 ### GERAL
 ##### Input
@@ -121,11 +141,24 @@ quit;
 z=42;
 escrever(z);
 ```
-##### Input
+##### Output
 ```
-Ler variavel k: *5*
+Ler variavel k: 5
 Variavel p: 11
 Variavel p: 22
 Variavel p: 1
 Variavel k: 5
 Número: 42
+```
+
+## Estrutura 
+```
+structs.h
+└── proglist.h
+    ├── proglist.c
+    └── varhash.h
+         ├── varhash.c
+         └── proj.h
+             ├── use_proj.c
+             └── proj.c
+```

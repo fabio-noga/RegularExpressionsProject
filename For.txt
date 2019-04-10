@@ -1,0 +1,6 @@
+z=5;
+label z1;
+z=z-  1;
+escrever(z);
+if z goto z1;
+quit;

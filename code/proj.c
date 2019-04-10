@@ -1,4 +1,4 @@
-#include "proj.h"
+#include "../headers/proj.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "varhash.h"
+#include "../headers/varhash.h"
 MAP lookupHash(char *s) {
     int index;
     index = hashChar(s);

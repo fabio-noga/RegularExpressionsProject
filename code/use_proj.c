@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "proj.h"
+#include "../headers/proj.h"
 void main(int argc, char *argv[]) {
     initHash();
     PROGLIST l;

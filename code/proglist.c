@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "proglist.h"
+#include "../headers/proglist.h"
 PROGLIST mkProgList(Instr givenInstr) {
     PROGLIST p;
     p = (PROGLIST)malloc(sizeof(struct proglist));

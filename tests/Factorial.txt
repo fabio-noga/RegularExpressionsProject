@@ -1,0 +1,8 @@
+ler(i);
+k = 1;
+label l1;
+k = k*i;
+i=i-1;
+if i goto l1;
+escrever(k);
+quit;

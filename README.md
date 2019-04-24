@@ -6,7 +6,7 @@
 A leitura do programa pode ser feita da forma
 >./newLanguage
 
-para ler a partir do stin ou
+para ler a partir do stdin ou
 >./newLanguage test.txt
 
 para ler a partir de um ficheiro 

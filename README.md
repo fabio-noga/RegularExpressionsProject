@@ -1,7 +1,5 @@
 # RegularExpressionsProject
-[LabProg Project 1](https://github.com/fabio-noga/NewLanguageProject)
-(available April 8)
-*by* Fábio Nogueira 201706376 e Luís Trinta 201707192.
+(A simple project in Clang that reads a pseudo-language, and executes it. Academic Project. All documentation is in portuguese)
 
 A leitura do programa pode ser feita da forma
 >./newLanguage
